@@ -11,6 +11,45 @@ class CPU:
         self.pc = 0
         self.reg = [bin(0)] * 8
 
+        #create a branchtable
+        self.branchtable = {}
+        self.branchtable["ldi"] = self.handle_ldi
+        self.branchtable["prn"] = self.handle_prn
+        self.branchtable["hlt"] = self.handle_hlt
+        self.branchtable["mul"] = self.handle_mul
+
+        #create push and pop
+        self.branchtable["push"] = self.handle_push
+        self.branchtable["pop"] = self.handle_pop
+
+    def handle_pop(self):
+        pass
+        self.pc += 2
+
+    def handle_push(self):
+        pass
+        self.pc += 2
+
+    def handle_ldi(self, operand_a, operand_b):
+        self.reg[int(operand_a, 2)] = operand_b
+        self.pc += 3
+
+    def handle_prn(self, operand_a):
+        print(int(self.reg[int(operand_a, 2)], 2))
+        self.pc += 2
+
+    def handle_htl(self):
+        sys.exit(1)
+        print("Halt!")
+
+    def handle_mul(self, operand_a, operand_b):
+        num1 = self.reg[int(operand_a, 2)]
+        num2 = self.reg[int(operand_b, 2)]
+        answer_mul = int(num1, 2) * int(num2, 2)
+
+        self.reg[int(operand_a, 2)] = bin(answer_mul)
+        self.pc += 3
+
     def ram_read(self, mar):
         return self.ram[mar]
 
@@ -76,6 +115,12 @@ class CPU:
 
         hlt = bin(0b00000001)
 
+        mul = bin(0b10000010)
+
+        push = bin(0b01000101)
+
+        pop = bin(0b1000110)
+
         run = True
 
         while run:
@@ -83,15 +128,20 @@ class CPU:
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
 
+            if ir == mul:
+                self.branchtable['mul'](operand_a, operand_b)
+
             if ir == ldi:
-                self.reg[int(operand_a, 2)] = operand_b
-                self.pc += 3
+                self.branchtable['mul'](operand_a, operand_b)
 
             if ir == prn:
-                val = self.reg[int(operand_a, 2)]
-                print(int(val, 2))
-                self.pc += 2
+                self.branchtable['prn'](operand_a)
 
-            elif if == hlt:
-                run = False
-                print("HALTED")
+            if ir == push:
+                self.branchtable['push']()
+
+            if ir == pop:
+                self.branchtable['pop']()
+
+            elif ir == hlt:
+                self.branchtable['hlt']()
