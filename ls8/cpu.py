@@ -19,16 +19,39 @@ class CPU:
         self.branchtable["mul"] = self.handle_mul
 
         #create push and pop
+        self.sp = 255
         self.branchtable["push"] = self.handle_push
         self.branchtable["pop"] = self.handle_pop
 
-    def handle_pop(self):
+        #create call, ret and add
+        self.branchtable["call"] = self.handle_call
+        self.branchtable["ret"] = self.handle_ret
+        self.branchtable["add"] = self.handle_add
+
+    def handle_call(self):
         pass
+
+    def handle_ret(self):
+        pass
+
+    def handle_add(self):
+        pass
+
+    def handle_pop(self):
+        self.sp += 1
+        num_pop = self.ram[self.sp]
+        index = int(operand_a, 2)
+        self.reg[index] = num_pop
+
         self.pc += 2
 
     def handle_push(self):
-        pass
+        index = int(operand_a, 2)
+        num_push = self.reg[index]
+        self.ram[self.sp] = num_push
         self.pc += 2
+        self.sp -= 1
+
 
     def handle_ldi(self, operand_a, operand_b):
         self.reg[int(operand_a, 2)] = operand_b
@@ -121,6 +144,12 @@ class CPU:
 
         pop = bin(0b1000110)
 
+        call = bin(0b0101000)
+
+        ret = bin(0b00010001)
+
+        add = bin(0b10100000)
+
         run = True
 
         while run:
@@ -138,10 +167,19 @@ class CPU:
                 self.branchtable['prn'](operand_a)
 
             if ir == push:
-                self.branchtable['push']()
+                self.branchtable['push'](operand_a)
 
             if ir == pop:
-                self.branchtable['pop']()
+                self.branchtable['pop'](operand_a)
+
+            if ir == call:
+                self.branchtable['call']()
+
+            if ir == ret:
+                self.branchtable['ret']()
+
+            if ir == add:
+                self.branchtable['add']()
 
             elif ir == hlt:
                 self.branchtable['hlt']()
