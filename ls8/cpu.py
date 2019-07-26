@@ -29,13 +29,29 @@ class CPU:
         self.branchtable["add"] = self.handle_add
 
     def handle_call(self):
-        pass
+        print('call')
+        instructions = self.pc + 2
+        self.ram[self.sp] = bin(instructions)
+        self.sp -= 1
+        pc_change = int(operand_a, 2)
+        val_register = self.reg[pc_change]
+        self.pc = int(val_register, 2)
 
     def handle_ret(self):
-        pass
+        print('return')
+        self.sp += 1
+        position_ret = self.ram[self.sp]
+        self.pc = int(position_ret, 2)
 
-    def handle_add(self):
-        pass
+    def handle_add(self, operand_a, operand_a):
+        print('add')
+        indx1 = int(operand_a, 2)
+        indx2 = int(operand_b, 2)
+        a1 = int(self.reg[indx1], 2)
+        a2 = int(self.reg[indx2], 2)
+        num_sum = a1 + a2
+        self.reg[indx1] = bin(num_sum)
+        self.pc += 3
 
     def handle_pop(self):
         self.sp += 1
